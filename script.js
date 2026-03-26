@@ -96,23 +96,36 @@ document.querySelectorAll('.add-to-cart').forEach(btn => {
 });
 
 // ── Renderizar items del carrito ─────────────────────────────
+// ── Renderizar items del carrito ─────────────────────────────
 function renderCart() {
-  // Actualizar contador
-  const total = cart.reduce((sum, item) => sum + item.qty, 0);
-  cartCount.textContent = total;
+  // 1. Actualizar contador de burbuja (cantidad de productos)
+  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+  cartCount.textContent = totalItems;
+}
+  // 2. Calcular Dinero Total (suma de precios)
+  const totalMoney = cart.reduce((sum, item) => sum + (Number(item.price) * item.qty), 0);
+  
+  // Actualizar el número en el HTML (el que agregamos recién)
+  const totalPriceElement = document.getElementById('total-price');
+  if (totalPriceElement) {
+    totalPriceElement.textContent = totalMoney.toLocaleString('es-AR');
+  }
 
-  // Vaciar contenedor
+  // Vaciar contenedor de items
   cartItems.innerHTML = '';
 
   if (cart.length === 0) {
     cartItems.innerHTML = '<p class="cart-empty">Todavía no agregaste productos.</p>';
     cartSend.style.opacity = '0.4';
     cartSend.style.pointerEvents = 'none';
+    // Ocultar botón de MP si está vacío
+    if(document.getElementById('checkout-btn')) document.getElementById('checkout-btn').style.display = 'none';
     return;
   }
 
   cartSend.style.opacity = '1';
   cartSend.style.pointerEvents = 'all';
+  if(document.getElementById('checkout-btn')) document.getElementById('checkout-btn').style.display = 'block';
 
   cart.forEach((item, index) => {
     const el = document.createElement('div');
@@ -120,7 +133,7 @@ function renderCart() {
     el.innerHTML = `
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">$${item.price} c/u</div>
+        <div class="cart-item-price">$${Number(item.price).toLocaleString('es-AR')} c/u</div>
       </div>
       <div class="cart-item-controls">
         <button data-index="${index}" class="qty-minus">−</button>
@@ -131,7 +144,7 @@ function renderCart() {
     cartItems.appendChild(el);
   });
 
-  // Botones de cantidad
+  // Re-vincular botones de cantidad (esto ya lo tenías bien)
   cartItems.querySelectorAll('.qty-minus').forEach(btn => {
     btn.addEventListener('click', () => {
       const i = parseInt(btn.dataset.index);
@@ -149,10 +162,8 @@ function renderCart() {
     });
   });
 
-  // Armar link de WhatsApp
-  buildWhatsAppLink();
-}
-
+ 
+  
 // ── Armar mensaje de WhatsApp ────────────────────────────────
 function buildWhatsAppLink() {
   if (cart.length === 0) return;
@@ -174,23 +185,33 @@ cartClear.addEventListener('click', () => {
 });
 
 // ── Carrusel táctil ──────────────────────────────────────────
-document.querySelectorAll('.carousel').forEach(carousel => {
-  const track = carousel.querySelector('.carousel-track');
-  const dots  = carousel.querySelectorAll('.dot');
-  if (!track) return;
+// ── Agregar producto al carrito ──────────────────────────────
+document.querySelectorAll('.add-to-cart').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const name  = btn.dataset.name;
+    // Capturamos el precio que pusiste en el HTML
+    const price = parseFloat(btn.dataset.price) || 0; 
 
-  let index     = 0;
-  let startX    = 0;
-  let isDragging = false;
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      // Guardamos el precio real en el objeto
+      cart.push({ name, price, qty: 1 });
+    }
 
-  function goTo(i) {
-    const total = track.children.length;
-    if (total <= 1) return;
-    index = (i + total) % total;
-    track.style.transform = `translateX(-${index * 100}%)`;
-    dots.forEach((d, j) => d.classList.toggle('active', j === index));
-  }
+    // Feedback visual (opcional)
+    btn.textContent = '✓ Agregado';
+    btn.classList.add('added');
+    setTimeout(() => {
+      btn.textContent = '+ Agregar al pedido';
+      btn.classList.remove('added');
+    }, 1500);
 
+    renderCart();
+    openCart();
+  });
+});
   // Ocultar dots si hay una sola imagen
   if (track.children.length <= 1) {
     const dotsContainer = carousel.querySelector('.carousel-dots');
@@ -224,7 +245,7 @@ document.querySelectorAll('.carousel').forEach(carousel => {
     isDragging = false;
     carousel.classList.remove('dragging');
   });
-});
+
 
 // ── Init ─────────────────────────────────────────────────────
 renderCart();

@@ -34,22 +34,27 @@
     <h3 class="display">Tu pedido</h3>
     <button class="cart-close" id="cartClose">✕</button>
   </div>
+
   <div class="cart-items" id="cartItems">
     <p class="cart-empty">Todavía no agregaste productos.</p>
   </div>
-  <div class="cart-footer">
-    <a href="#" class="btn-primary cart-send" id="cartSend" target="_blank">
-      Enviar pedido por WhatsApp →
-    </a>
-    <button class="btn-ghost cart-clear" id="cartClear">Vaciar carrito</button>
-  </div>
-  <div id="cart-total">
-    Total: $<span id="total-price">0</span>
-</div>
 
-<button id="checkout-btn" onclick="irAPagar()" style="background-color: #009ee3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 100%;">
-    Pagar con Mercado Pago
-</button>
+  <div class="cart-footer">
+    <div id="cart-total" style="margin-bottom: 15px; font-size: 1.2rem; font-weight: bold; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between;">
+        <span>Total:</span>
+        <span>$<span id="total-price">0</span></span>
+    </div>
+
+    <button id="checkout-btn" onclick="irAPagar()" style="background-color: #009ee3; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px; font-size: 1rem;">
+        Pagar con Mercado Pago
+    </button>
+
+    <a href="#" class="btn-primary cart-send" id="cartSend" target="_blank" style="display: block; text-align: center; margin-bottom: 10px; text-decoration: none;">
+        Enviar pedido por WhatsApp →
+    </a>
+
+    <button class="btn-ghost cart-clear" id="cartClear" style="width: 100%; opacity: 0.7;">Vaciar carrito</button>
+  </div>
 </aside>
 
 <!-- ─── HERO ────────────────────────────────────────────────── -->
@@ -116,11 +121,11 @@
           </div>
           <div class="product-info">
             <h5>Nombre del accesorio</h5>
-            <div class="price">$00.000</div>
+            <div class="price">$45.000</div>
             <div class="price-sub">Precio de lista</div>
             <button class="product-cta add-to-cart"
               data-name="Nombre del accesorio"
-              data-price="00.000">
+              data-price="45.000">
               + Agregar al pedido
             </button>
           </div>
@@ -156,11 +161,11 @@
               <button class="variante" data-index="1">Vainilla</button>
               <button class="variante" data-index="2">Cookies and Cream</button>
             </div>
-            <div class="price">$00.000</div>
+            <div class="price">$20.000</div>
             <div class="price-sub">Precio de lista</div>
             <button class="product-cta add-to-cart"
               data-name="WHEY PROTEIN STAR NUTRITION 2LB - Chocolate Suizo"
-              data-price="00.000">
+              data-price="20.000">
               + Agregar al pedido
             </button>
           </div>
