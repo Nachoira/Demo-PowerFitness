@@ -10,9 +10,7 @@
   --muted:   #f0e2e2;
   --radius:  6px;
 }
-html, body{
-  overflow-x: hidden;
-}
+
 
 /* ─── RESET ──────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,6 +27,9 @@ a { text-decoration: none; color: inherit; }
 img { display: block; width: 100%; }
 button { cursor: pointer; font-family: inherit; }
 
+html, body{
+  overflow-x: hidden;
+}
 /* ─── NOISE OVERLAY ──────────────────────────────────────────── */
 body::before {
   content: '';
