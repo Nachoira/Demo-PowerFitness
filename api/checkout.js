@@ -1,39 +1,44 @@
-const { MercadoPagoConfig, Preference } = require('mercadopago');
+const mercadopago = require('mercadopago');
 
-// Esta es la conexión segura con tu cuenta de MP
-const client = new MercadoPagoConfig({ 
-  accessToken: process.env.MP_ACCESS_TOKEN 
+// Configuramos Mercado Pago con tu llave secreta de Vercel
+mercadopago.configure({
+    access_token: process.env.MP_ACCESS_TOKEN
 });
 
 module.exports = async (req, res) => {
-  // Solo aceptamos peticiones de compra (POST)
-  if (req.method !== 'POST') return res.status(405).send('Método no permitido');
+    // Solo aceptamos pedidos tipo POST
+    if (req.method !== 'POST') {
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
 
-  try {
-    const { items } = req.body; // Aquí llega tu array 'cart' desde el JS
+    try {
+        const { items } = req.body;
 
-    const preference = new Preference(client);
-    const result = await preference.create({
-      body: {
-        items: items.map(item => ({
-          title: item.name,
-          unit_price: Number(item.price),
-          quantity: Number(item.qty),
-          currency_id: 'ARS'
-        })),
-        back_urls: {
-          // Después del pago, vuelve a tu web
-          success: `https://${req.headers.host}`, 
-          failure: `https://${req.headers.host}`,
-        },
-        auto_return: "approved",
-      }
-    });
+        // Armamos la "Preferencia" (lo que MP le va a mostrar al cliente)
+        let preference = {
+            items: items.map(item => ({
+                title: item.name,
+                unit_price: Number(item.price),
+                quantity: Number(item.qty),
+                currency_id: 'ARS'
+            })),
+            // Estas son las páginas a las que vuelve el cliente tras pagar
+            back_urls: {
+                success: "https://demo-power-fitness.vercel.app/",
+                failure: "https://demo-power-fitness.vercel.app/",
+                pending: "https://demo-power-fitness.vercel.app/"
+            },
+            auto_return: "approved",
+        };
 
-    // Le devolvemos a tu web el link de pago generado
-    res.status(200).json({ init_point: result.init_point });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al crear el pago" });
-  }
+        // Le pedimos a Mercado Pago que cree el link
+        const response = await mercadopago.preferences.create(preference);
+
+        // Le enviamos el link de pago (init_point) a tu script.js
+        res.status(200).json({ init_point: response.body.init_point });
+
+    } catch (error) {
+        console.error("Error en MP:", error);
+        res.status(500).json({ error: error.message });
+    }
 };
