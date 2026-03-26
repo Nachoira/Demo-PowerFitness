@@ -229,3 +229,33 @@ document.querySelectorAll('.carousel').forEach(carousel => {
 // ── Init ─────────────────────────────────────────────────────
 renderCart();
 
+async function irAPagar() {
+    if (cart.length === 0) return alert("El carrito está vacío");
+
+    const btnPago = document.getElementById('checkout-btn');
+    btnPago.innerText = "Cargando pago...";
+    btnPago.style.opacity = "0.5";
+
+    try {
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: cart }) // 'cart' es tu array de productos
+        });
+
+        const data = await response.json();
+
+        if (data.init_point) {
+            window.location.href = data.init_point; // Redirige a Mercado Pago
+        } else {
+            alert("Error al generar el pago");
+            btnPago.innerText = "Pagar con Mercado Pago";
+            btnPago.style.opacity = "1";
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Hubo un problema de conexión");
+        btnPago.innerText = "Pagar con Mercado Pago";
+        btnPago.style.opacity = "1";
+    }
+}
